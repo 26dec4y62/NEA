@@ -1,18 +1,14 @@
-# Imports
-from pyexpat import expat_CAPI
 import sys
-import math
 import requests
 import numpy as np
 from rdkit import Chem
 from rdkit.Chem import AllChem
+from PyQt5 import QtWidgets
 import vtk
 from vtkmodules.qt.QVTKRenderWindowInteractor import QVTKRenderWindowInteractor
-from PyQt5 import QtWidgets
-from urllib.parse import quote
 
-# Atom colors & radii
-ATOM_COLOURS = {
+# --- Atom colors & radii ---
+ATOM_COLORS = {
     "H": (1.0, 1.0, 1.0),
     "C": (0.2, 0.2, 0.2),
     "N": (0.0, 0.0, 1.0),
@@ -25,48 +21,55 @@ ATOM_COLOURS = {
     "P": (1.0, 0.5, 0.0),
 }
 ATOM_RADII = {
-    "H": 0.25,
-    "C": 0.35,
-    "N": 0.33,
-    "O": 0.33,
-    "F": 0.32,
-    "Cl": 0.38,
-    "Br": 0.40,
-    "I": 0.45,
-    "S": 0.38,
-    "P": 0.40
+    "H": 0.25, "C": 0.35, "N": 0.33, "O": 0.33,
+    "F": 0.32, "Cl": 0.38, "Br": 0.40, "I": 0.45,
+    "S": 0.38, "P": 0.40
 }
 
-def color_for_symbol(sym):
-    return ATOM_COLOURS.get(sym, (0.7, 0.7, 0.7))
 
-def radius_for_symbol(sym):
+def color_for_symbol(sym: str):
+    return ATOM_COLORS.get(sym, (0.7, 0.7, 0.7))
+
+
+def radius_for_symbol(sym: str):
     return ATOM_RADII.get(sym, 0.35)
 
+
+# --- PubChem fetch ---
 def fetch_pubchem_by_name(name: str):
-    # Fetch SMILES and IUPACName from PubChem by molecule name
+    """Fetch SMILES and IUPAC name from PubChem by molecule name."""
+    from urllib.parse import quote
+
     name_enc = quote(name)
-    url = f"https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/{name_enc}/property/CanonicalSMILES,IUPACName/JSON"
-    
+    url = (
+        f"https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/{name_enc}"
+        "/property/CanonicalSMILES,IUPACName,IsomericSMILES,ConnectivitySMILES/JSON"
+    )
+
     r = requests.get(url, timeout=10)
-    
     r.raise_for_status()
     js = r.json()
-    
+
     props_list = js.get("PropertyTable", {}).get("Properties", [])
     if not props_list:
         raise ValueError(f"No properties returned by PubChem for '{name}'")
-    
+
     props = props_list[0]
-    smiles = props.get("CanonicalSMILES") or props.get("IsomericSMILES") or props.get("ConnectivitySMILES")
+    # Try multiple SMILES fields in order of reliability
+    smiles = (
+        props.get("CanonicalSMILES")
+        or props.get("IsomericSMILES")
+        or props.get("ConnectivitySMILES")
+    )
     iupac = props.get("IUPACName") or "(IUPAC unavailable)"
-    
+
     if not smiles:
         raise ValueError(f"No SMILES returned by PubChem for '{name}'")
-    
+
     return {"smiles": smiles, "iupac": iupac}
 
-# RDKit 3D molecule
+
+# --- RDKit 3D molecule ---
 def mol_from_smiles_3d(smiles: str):
     mol = Chem.MolFromSmiles(smiles)
     if mol is None:
@@ -79,12 +82,12 @@ def mol_from_smiles_3d(smiles: str):
     return mol
 
 
-# VTK rendering
+# --- VTK rendering ---
 def add_molecule_to_renderer(mol, renderer):
     renderer.RemoveAllViewProps()
     conf = mol.GetConformer()
 
-    # Parsing atoms
+    # Atoms
     for atom in mol.GetAtoms():
         p = conf.GetAtomPosition(atom.GetIdx())
         sym = atom.GetSymbol()
@@ -102,26 +105,24 @@ def add_molecule_to_renderer(mol, renderer):
         actor.GetProperty().SetColor(*color_for_symbol(sym))
         renderer.AddActor(actor)
 
-    # Making bonds
+    # Bonds
     for bond in mol.GetBonds():
         start = conf.GetAtomPosition(bond.GetBeginAtomIdx())
         end = conf.GetAtomPosition(bond.GetEndAtomIdx())
         v = np.array([end.x - start.x, end.y - start.y, end.z - start.z])
         length = np.linalg.norm(v)
-        if length == 0: continue
+        if length == 0:
+            continue
 
-        # Create cylinder
         cyl = vtk.vtkCylinderSource()
         cyl.SetRadius(0.12)
         cyl.SetResolution(20)
         cyl.SetHeight(1)
 
-        # Transform cylinder
         transform = vtk.vtkTransform()
-        mid = [(start.x + end.x)/2, (start.y + end.y)/2, (start.z + end.z)/2]
+        mid = [(start.x + end.x) / 2, (start.y + end.y) / 2, (start.z + end.z) / 2]
         transform.Translate(*mid)
 
-        # Alignment
         v_norm = v / length
         y_axis = np.array([0, 1, 0])
         axis = np.cross(y_axis, v_norm)
@@ -146,11 +147,11 @@ def add_molecule_to_renderer(mol, renderer):
     renderer.GetActiveCamera().Zoom(1.3)
 
 
-# PyQt GUI
+# --- PyQt GUI ---
 class MoleculeViewer(QtWidgets.QMainWindow):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("3D Molecule Display")
+        self.setWindowTitle("Molecule Viewer (PubChem + RDKit + VTK)")
         self.resize(1000, 700)
 
         central = QtWidgets.QWidget()
@@ -160,7 +161,7 @@ class MoleculeViewer(QtWidgets.QMainWindow):
         # Input row
         input_layout = QtWidgets.QHBoxLayout()
         self.entry = QtWidgets.QLineEdit()
-        self.entry.setPlaceholderText("Enter molecule name")
+        self.entry.setPlaceholderText("Enter molecule name (e.g. methanol)")
         btn = QtWidgets.QPushButton("Search & Render")
         btn.clicked.connect(self.on_search)
         input_layout.addWidget(self.entry)
@@ -200,6 +201,7 @@ class MoleculeViewer(QtWidgets.QMainWindow):
 
         except Exception as e:
             QtWidgets.QMessageBox.critical(self, "Error", str(e))
+
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
