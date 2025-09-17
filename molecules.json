@@ -1,15 +1,12 @@
 {
   "History": [
-    "methanol"
+    "methylbenzene"
   ],
   "Properties": [
     {
-      "CID": 887,
-      "MolecularFormula": "CH4O"
-    },
-    [
-      "CH4O",
-      ""
-    ]
+      "CID": 1140,
+      "MolecularFormula": "C7H8",
+      "IUPACName": "toluene"
+    }
   ]
 }

@@ -29,6 +29,12 @@ class MoleculeViewer(QtWidgets.QMainWindow):
         input_layout.addWidget(btn)
         layout.addLayout(input_layout)
 
+        # Labels
+        self.iupac_name = QtWidgets.QLabel('IUPAC Name: —')
+        self.structural_formula = QtWidgets.QLabel('Structural Formula: —')
+        layout.addWidget(self.iupac_name)
+        layout.addWidget(self.structural_formula)
+
         # VTK Widget
         self.vtk_widget = QVTKRenderWindowInteractor(self)
         layout.addWidget(self.vtk_widget)
@@ -45,15 +51,39 @@ class MoleculeViewer(QtWidgets.QMainWindow):
         if not name:
             QtWidgets.QMessageBox.warning(self, 'Input error', 'Please enter a molecule name.')
             return
-        QtWidgets.QMessageBox.information(self, 'Works', f'{name} recognised.')
+        QtWidgets.QMessageBox.information(self, 'Check', f'{name} recognised.')
+        self.show_molecule(name)
+        self.display_key()
         self.appdata.add_history(name)
-        self.appdata.fetch_molecule(name)
+        try:
+            data = self.appdata.fetch_molecule(name)
+            iupac, structural = data['IUPACName'], Molecule.structural_formula(data['MolecularFormula'])
+            print(iupac, structural)
+            self.update_display(iupac, structural)
+        except Exception:
+            QtWidgets.QMessageBox.critical(self, "Error", f'Could not fetch data for {name}.')
+            return
 
-def main():
+    def show_molecule(self, smiles):
+        return
+
+    def update_display(self, iupac, structural):
+        self.iupac_name.setText(f'IUPAC Name: {iupac}')
+        self.structural_formula.setText(f'Structural Formula: {structural}')
+        return
+
+    def display_key(self):
+        key = QtWidgets.QMdiSubWindow()
+        key.setWindowTitle('Key')
+        key.resize(300, 200)
+        # self.key_list = QtWidgets.QListWidget()
+        # key.setWidget(self.key_list)   
+        # for symbol in Molecule.ATOM_COLOURS.keys():
+        #     self.key_list.addItem(symbol)
+        key.show()
+
+if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
     win = MoleculeViewer()
     win.show()
     sys.exit(app.exec())
-
-# if __name__ == '__main__':
-main()
