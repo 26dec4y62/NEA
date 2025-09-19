@@ -2,11 +2,5 @@
   "History": [
     "methylbenzene"
   ],
-  "Properties": [
-    {
-      "CID": 1140,
-      "MolecularFormula": "C7H8",
-      "IUPACName": "toluene"
-    }
-  ]
+  "Properties": []
 }
