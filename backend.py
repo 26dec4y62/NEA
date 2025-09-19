@@ -1,4 +1,3 @@
-import os
 import json
 import requests
 from urllib.parse import quote
@@ -12,16 +11,10 @@ class appdata:
         self.load_data()
 
     def load_data(self):
-        if os.path.exists(FILE):
-            try:
-                with open(FILE, 'r') as f:
-                    data = json.load(f)
-                self.names = data.get('History', [])
-                self.properties = data.get('Properties', [])
-            except Exception:
-                # ignore malformed file, start fresh
-                self.names = []
-                self.properties = []
+        with open(FILE, 'r') as f:
+            data = json.load(f)
+        self.names = data.get('History', [])
+        self.properties = data.get('Properties', [])
 
     def save_data(self):
         with open(FILE, 'w') as f:

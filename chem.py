@@ -29,8 +29,7 @@ class Molecule:
     }
 
     @classmethod
-    def structural_formula(cls, smiles):
-        # Heuristic algorithm
+    def structural_formula(cls, smiles): # Heuristic algorithm
         mol = Chem.MolFromSmiles(smiles)
         if mol is None:
             raise ValueError("Invalid SMILES")
