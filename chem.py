@@ -1,4 +1,6 @@
 from rdkit import Chem
+import math
+import numpy as np
 
 class Molecule:
     def __init__(self):
@@ -27,6 +29,30 @@ class Molecule:
         "S": 0.38,
         "P": 0.40
     }
+
+    ATOM_BONDS = {
+        "H": 1,
+        "C": 4,
+        "N": 3,
+        "O": 2,
+        "F": 1,
+        "Cl": 1,
+        "Br": 1,
+        "I": 1,
+        "S": 2,
+        "P": 3
+    }
+
+    def parse_molecule_to_dict(smiles):
+        mol = Chem.MolFromSmiles(smiles)
+        bond = mol.GetBonds()
+        d = {
+            index: [0 if index == idx or not mol.GetBondBetweenAtoms(index, idx) else bond.GetBondType() for idx in range(len(smiles))]
+            for index in range(len(smiles))
+        }
+        print(smiles)
+        print(d)
+
 
     @classmethod
     def structural_formula(cls, smiles): # Heuristic algorithm
@@ -63,7 +89,7 @@ class Molecule:
             sym = atom.GetSymbol()
             hcount = atom.GetTotalNumHs()
             if sym == "C":
-                return f"C{'H'+str(hcount) if hcount > 0 else ''}"
+                return f"C{'H' if hcount == 1 else f'H{hcount}' if hcount > 1 else ''}"
             elif sym == "O":
                 return "OH" if hcount == 1 else "O"
             elif sym == "N":
@@ -119,30 +145,9 @@ class Molecule:
         # start at a carbon if possible
         start = next((a for a in mol.GetAtoms() if a.GetSymbol() == "C"), mol.GetAtomWithIdx(0))
         return walk(start)
-
-    def _extract_atoms_and_bonds_rdkit(self):
-        if not self.self.mol:
-            return
-        
-        # Get conformer (3D coordinates)
-        conf = self.self.mol.GetConformer()
-        
-        # Extract atoms
-        self.atoms = []
-        for atom in self.self.mol.GetAtoms():
-            idx = atom.GetIdx()
-            pos = conf.GetAtomPosition(idx)
-            self.atoms.append({
-                'symbol': atom.GetSymbol(),
-                'position': [pos.x, pos.y, pos.z],
-                'index': idx
-            })
-        
-        # Extract bonds
-        self.bonds = []
-        for bond in self.self.mol.GetBonds():
-            self.bonds.append({
-                'atoms': [bond.GetBeginAtomIdx(), bond.GetEndAtomIdx()],
-                'order': bond.GetBondType()
-            })
     
+    def create_atoms(self):
+        pass
+
+    def create_bonds(self):
+        pass
