@@ -3,7 +3,7 @@ from PyQt5 import QtWidgets
 import vtk
 from vtkmodules.qt.QVTKRenderWindowInteractor import QVTKRenderWindowInteractor
 from backend import appdata
-from vtk_creation import MoleculeRenderer
+from vtk_creator import MoleculeRenderer
 
 class Window(QtWidgets.QMainWindow):
     def __init__(self):
