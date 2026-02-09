@@ -1,8 +1,3 @@
-"""
-Molecule Generation Module
-Contains molecule data structures, 3D transformations, and predefined molecules
-"""
-
 import numpy as np
 import math
 
@@ -23,11 +18,9 @@ ATOM_DATA = {
 
 
 class Matrix3D:
-    """Advanced matrix operations for 3D transformations"""
-    
     @staticmethod
     def rotation_x(angle):
-        """Rotation matrix around X axis"""
+        # Rotation matrix around X axis
         c, s = np.cos(angle), np.sin(angle)
         return np.array([
             [1, 0, 0],
@@ -37,7 +30,7 @@ class Matrix3D:
     
     @staticmethod
     def rotation_y(angle):
-        """Rotation matrix around Y axis"""
+        # Rotation matrix around Y axis
         c, s = np.cos(angle), np.sin(angle)
         return np.array([
             [c, 0, s],
@@ -47,7 +40,7 @@ class Matrix3D:
     
     @staticmethod
     def rotation_z(angle):
-        """Rotation matrix around Z axis"""
+        # Rotation matrix around Z axis
         c, s = np.cos(angle), np.sin(angle)
         return np.array([
             [c, -s, 0],
@@ -57,7 +50,6 @@ class Matrix3D:
     
     @staticmethod
     def project_3d_to_2d(point, fov, viewer_distance, window_width, window_height, ui_panel_width):
-        """Project 3D point to 2D screen coordinates with perspective"""
         x, y, z = point
         factor = fov / (viewer_distance + z)
         x_proj = x * factor + window_width // 2 - ui_panel_width // 2
@@ -66,8 +58,6 @@ class Matrix3D:
 
 
 class Atom:
-    """Represents a single atom in 3D space"""
-    
     def __init__(self, element, position, atom_id):
         self.element = element
         self.position = np.array(position, dtype=float)
@@ -75,13 +65,12 @@ class Atom:
         self.data = ATOM_DATA.get(element, ATOM_DATA['C'])
     
     def get_screen_pos(self, rotation_matrix, fov, viewer_distance, scale, window_width, window_height, ui_panel_width):
-        """Get 2D screen position after rotation and projection"""
         rotated = rotation_matrix @ (self.position * scale)
         return Matrix3D.project_3d_to_2d(rotated, fov, viewer_distance, window_width, window_height, ui_panel_width)
 
 
 class Bond:
-    """Represents a bond between two atoms"""
+    # Represents a bond between two atoms
     
     def __init__(self, atom1, atom2, bond_order=1):
         self.atom1 = atom1
@@ -90,8 +79,6 @@ class Bond:
 
 
 class Molecule:
-    """Represents a complete molecule with atoms and bonds"""
-    
     def __init__(self, name, iupac_name=None):
         self.name = name
         self.iupac_name = iupac_name or name
@@ -99,19 +86,17 @@ class Molecule:
         self.bonds = []
     
     def add_atom(self, element, position):
-        """Add an atom to the molecule"""
         atom_id = len(self.atoms) + 1
         atom = Atom(element, position, atom_id)
         self.atoms.append(atom)
         return atom
     
     def add_bond(self, atom1, atom2, bond_order=1):
-        """Add a bond between two atoms"""
         bond = Bond(atom1, atom2, bond_order)
         self.bonds.append(bond)
     
     def calculate_distances(self):
-        """Calculate distance matrix between all atoms"""
+        # Calculate distance matrix between all atoms
         n = len(self.atoms)
         distance_matrix = np.zeros((n, n))
         
@@ -124,7 +109,6 @@ class Molecule:
         return distance_matrix
     
     def to_dict(self):
-        """Convert molecule to dictionary for JSON storage"""
         return {
             'name': self.name,
             'iupac_name': self.iupac_name,
@@ -148,7 +132,6 @@ class Molecule:
     
     @classmethod
     def from_dict(cls, data):
-        """Create molecule from dictionary"""
         mol = cls(data['name'], data.get('iupac_name'))
         
         # Create atoms
@@ -170,11 +153,9 @@ class Molecule:
 
 
 class MoleculeLibrary:
-    """Predefined molecules with accurate 3D coordinates"""
-    
+    # Predefined molecules with accurate 3D coordinates
     @staticmethod
     def create_methane():
-        """CH4 - Tetrahedral geometry"""
         mol = Molecule("Methane", "methane")
         
         # Central carbon
@@ -201,7 +182,6 @@ class MoleculeLibrary:
     
     @staticmethod
     def create_ethanol():
-        """C2H5OH - Ethanol"""
         mol = Molecule("Ethanol", "ethanol")
         
         # C-C backbone
@@ -233,7 +213,6 @@ class MoleculeLibrary:
     
     @staticmethod
     def create_water():
-        """H2O - Bent geometry"""
         mol = Molecule("Water", "oxidane")
         
         o = mol.add_atom('O', [0, 0, 0])
@@ -252,7 +231,6 @@ class MoleculeLibrary:
     
     @staticmethod
     def create_benzene():
-        """C6H6 - Aromatic ring"""
         mol = Molecule("Benzene", "benzene")
         
         # Hexagonal ring
@@ -284,7 +262,6 @@ class MoleculeLibrary:
     
     @staticmethod
     def create_ammonia():
-        """NH3 - Trigonal pyramidal"""
         mol = Molecule("Ammonia", "azane")
         
         n = mol.add_atom('N', [0, 0, 0])

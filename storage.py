@@ -1,21 +1,13 @@
-"""
-Molecule Storage Module
-Handles saving and loading molecules to/from JSON files
-"""
-
 import json
 import os
 
 
 class MoleculeStorage:
-    """Backend storage operations for molecules"""
-    
     def __init__(self, filename='saved_molecules.json'):
         self.filename = filename
         self.molecules = self._load_from_file()
     
     def _load_from_file(self):
-        """Load previously saved molecules from JSON"""
         if os.path.exists(self.filename):
             try:
                 with open(self.filename, 'r') as f:
@@ -26,7 +18,6 @@ class MoleculeStorage:
         return []
     
     def save_molecule(self, molecule_dict):
-        """Save a molecule to the JSON file"""
         if not molecule_dict:
             return False
         
@@ -54,18 +45,16 @@ class MoleculeStorage:
             return False
     
     def get_saved_molecules(self):
-        """Return list of all saved molecules"""
+        # Return list of all saved molecules
         return self.molecules.copy()
     
     def get_molecule_by_name(self, name):
-        """Retrieve a specific molecule by name"""
         for mol in self.molecules:
             if mol['name'] == name:
                 return mol
         return None
     
     def delete_molecule(self, name):
-        """Delete a molecule by name"""
         self.molecules = [m for m in self.molecules if m['name'] != name]
         
         try:

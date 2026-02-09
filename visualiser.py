@@ -17,8 +17,6 @@ UI_PANEL_WIDTH = 300
 
 
 class MoleculeVisualizer:
-    """Main application class for the molecule visualizer interface"""
-    
     def __init__(self):
         pygame.init()
         self.screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
@@ -53,7 +51,6 @@ class MoleculeVisualizer:
         self.load_molecule(MoleculeLibrary.create_methane())
     
     def load_molecule(self, molecule):
-        """Load a molecule for visualization"""
         self.molecule = molecule
         
         # Reset rotation
@@ -62,7 +59,6 @@ class MoleculeVisualizer:
         self.rotation_z = 0
     
     def save_current_molecule(self):
-        """Save the current molecule using the storage backend"""
         if self.molecule:
             mol_dict = self.molecule.to_dict()
             success = self.storage.save_molecule(mol_dict)
@@ -72,14 +68,13 @@ class MoleculeVisualizer:
         return False
     
     def get_rotation_matrix(self):
-        """Get combined rotation matrix"""
+        # Get combined rotation matrix
         rx = Matrix3D.rotation_x(self.rotation_x)
         ry = Matrix3D.rotation_y(self.rotation_y)
         rz = Matrix3D.rotation_z(self.rotation_z)
         return rz @ ry @ rx
     
     def draw_molecule(self):
-        """Draw the molecule in 3D"""
         if not self.molecule:
             return
         
@@ -157,7 +152,6 @@ class MoleculeVisualizer:
             self.screen.blit(id_text, (x - id_text.get_width()//2, y - id_text.get_height()//2))
     
     def draw_ui(self):
-        """Draw user interface panel"""
         # UI Panel background
         panel_rect = pygame.Rect(WINDOW_WIDTH - UI_PANEL_WIDTH, 0, UI_PANEL_WIDTH, WINDOW_HEIGHT)
         pygame.draw.rect(self.screen, (30, 30, 40), panel_rect)
@@ -237,7 +231,6 @@ class MoleculeVisualizer:
             y_offset += 20
     
     def handle_events(self):
-        """Handle user input events"""
         for event in pygame.event.get():
             if event.type == QUIT:
                 self.running = False
@@ -285,7 +278,6 @@ class MoleculeVisualizer:
                     self.last_mouse_pos = event.pos
     
     def run(self):
-        """Main application loop"""
         while self.running:
             self.handle_events()
             
@@ -306,7 +298,6 @@ class MoleculeVisualizer:
 
 
 def main():
-    """Entry point for the application"""
     app = MoleculeVisualizer()
     app.run()
 
