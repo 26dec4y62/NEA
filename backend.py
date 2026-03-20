@@ -3,6 +3,7 @@ from urllib.parse import quote
 from urllib.request import urlopen
 from urllib.error import URLError, HTTPError
 from collections import Counter, deque
+import requests
 
 FILE = "molecules.json"
 
@@ -13,15 +14,10 @@ class appdata:
         self.load_data()
 
     def load_data(self):
-        try:
-            with open(FILE, "r") as f:
-                data = json.load(f)
-            self.history = data.get("History", [])
-            self.molecule_cache = data.get("Cache", {})
-        except FileNotFoundError:
-            self.history = []
-            self.molecule_cache = {}
-            self.save_data()
+        with open(FILE, "r") as f:
+            data = json.load(f)
+        self.history = data.get("History", [])
+        self.molecule_cache = data.get("Cache", {})
 
     def save_data(self):
         with open(FILE, "w") as f:
@@ -59,40 +55,28 @@ class appdata:
         props_url = (
             f"https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/{name_enc}/property/IUPACName,MolecularFormula,IsomericSMILES/JSON"
         )
-        try:
-            with urlopen(props_url, timeout=10) as response:
-                props_data = json.loads(response.read().decode("utf-8"))
-                print(props_data)
+        try:    
+            response = requests.get(props_url, timeout=10)
+            props_data = response.json()
             props = props_data["PropertyTable"]["Properties"][0]
         except (URLError, HTTPError, KeyError) as e:
             raise ValueError(f"Could not fetch properties for: {name}")
         
         # Get 3D structure - SDF format
         sdf_url = f"https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/{name_enc}/SDF?record_type=3d"
-        try:
-            with urlopen(sdf_url, timeout=10) as response:
-                sdf_text = response.read().decode("utf-8")
-            atoms, bonds = self.parse_sdf(sdf_text)
-        except (URLError, HTTPError):
-            # 2D coordinates fallback
-            print(f"3D structure not available for {name}, using 2D")
-            sdf_url_2d = f"https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/{name_enc}/SDF"
-            try:
-                with urlopen(sdf_url_2d, timeout=10) as response:
-                    sdf_text = response.read().decode("utf-8")
-                atoms, bonds = self.parse_sdf(sdf_text)
-            except (URLError, HTTPError) as e:
-                raise ValueError(f"Could not fetch structure for: {name}")
+        sdf_response = requests.get(sdf_url, timeout=10)
+        sdf_text = sdf_response.text
+        atoms, bonds = self.parse_sdf(sdf_text)
         
         # Generate structural formula
         structural_formula = self.generate_structural_formula(atoms, bonds)
         
         return {
             "name": name,
-            "iupac_name": props.get("IUPACName", "N/A"),
-            "formula": props.get("MolecularFormula", "N/A"),
+            "iupac_name": props["IUPACName"],
+            "formula": props["MolecularFormula"],
             "structural_formula": structural_formula,
-            "smiles": props.get("IsomericSMILES", "N/A"),
+            "smiles": props["SMILES"],
             "atoms": atoms,
             "bonds": bonds
         }

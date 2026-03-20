@@ -29,9 +29,9 @@ class Window(QtWidgets.QMainWindow):
 
         # Info section
         info_layout = QtWidgets.QVBoxLayout()
-        self.iupac_name = QtWidgets.QLabel("IUPAC Name: —")
-        self.structural_formula = QtWidgets.QLabel("Molecular Formula: —")
-        self.atom_count = QtWidgets.QLabel("Atoms: —")
+        self.iupac_name = QtWidgets.QLabel("IUPAC Name: ")
+        self.structural_formula = QtWidgets.QLabel("Molecular Formula: ")
+        self.atom_count = QtWidgets.QLabel("Atoms: ")
         info_layout.addWidget(self.iupac_name)
         info_layout.addWidget(self.structural_formula)
         info_layout.addWidget(self.atom_count)

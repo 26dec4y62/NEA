@@ -1,4 +1,270 @@
 {
-  "History": [],
-  "Cache": {}
+  "History": [
+    "sulfur dioxide",
+    "SO2",
+    "water",
+    "sulphur dioxide"
+  ],
+  "Cache": {
+    "sulfur dioxide": {
+      "name": "sulfur dioxide",
+      "iupac_name": "sulfur dioxide",
+      "formula": "O2S",
+      "structural_formula": "S=OO",
+      "smiles": "O=S=O",
+      "atoms": [
+        {
+          "element": "S",
+          "position": [
+            0.0,
+            -0.5774,
+            0.0
+          ]
+        },
+        {
+          "element": "O",
+          "position": [
+            1.3091,
+            0.2887,
+            0.0
+          ]
+        },
+        {
+          "element": "O",
+          "position": [
+            -1.3091,
+            0.2887,
+            0.0
+          ]
+        }
+      ],
+      "bonds": [
+        {
+          "atom1": 0,
+          "atom2": 1,
+          "atom1_pos": [
+            0.0,
+            -0.5774,
+            0.0
+          ],
+          "atom2_pos": [
+            1.3091,
+            0.2887,
+            0.0
+          ],
+          "type": 2
+        },
+        {
+          "atom1": 0,
+          "atom2": 2,
+          "atom1_pos": [
+            0.0,
+            -0.5774,
+            0.0
+          ],
+          "atom2_pos": [
+            -1.3091,
+            0.2887,
+            0.0
+          ],
+          "type": 2
+        }
+      ]
+    },
+    "so2": {
+      "name": "SO2",
+      "iupac_name": "sulfur dioxide",
+      "formula": "O2S",
+      "structural_formula": "S=OO",
+      "smiles": "O=S=O",
+      "atoms": [
+        {
+          "element": "S",
+          "position": [
+            0.0,
+            -0.5774,
+            0.0
+          ]
+        },
+        {
+          "element": "O",
+          "position": [
+            1.3091,
+            0.2887,
+            0.0
+          ]
+        },
+        {
+          "element": "O",
+          "position": [
+            -1.3091,
+            0.2887,
+            0.0
+          ]
+        }
+      ],
+      "bonds": [
+        {
+          "atom1": 0,
+          "atom2": 1,
+          "atom1_pos": [
+            0.0,
+            -0.5774,
+            0.0
+          ],
+          "atom2_pos": [
+            1.3091,
+            0.2887,
+            0.0
+          ],
+          "type": 2
+        },
+        {
+          "atom1": 0,
+          "atom2": 2,
+          "atom1_pos": [
+            0.0,
+            -0.5774,
+            0.0
+          ],
+          "atom2_pos": [
+            -1.3091,
+            0.2887,
+            0.0
+          ],
+          "type": 2
+        }
+      ]
+    },
+    "water": {
+      "name": "water",
+      "iupac_name": "oxidane",
+      "formula": "H2O",
+      "structural_formula": "OHH",
+      "smiles": "O",
+      "atoms": [
+        {
+          "element": "O",
+          "position": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "element": "H",
+          "position": [
+            0.2774,
+            0.8929,
+            0.2544
+          ]
+        },
+        {
+          "element": "H",
+          "position": [
+            0.6068,
+            -0.2383,
+            -0.7169
+          ]
+        }
+      ],
+      "bonds": [
+        {
+          "atom1": 0,
+          "atom2": 1,
+          "atom1_pos": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "atom2_pos": [
+            0.2774,
+            0.8929,
+            0.2544
+          ],
+          "type": 1
+        },
+        {
+          "atom1": 0,
+          "atom2": 2,
+          "atom1_pos": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "atom2_pos": [
+            0.6068,
+            -0.2383,
+            -0.7169
+          ],
+          "type": 1
+        }
+      ]
+    },
+    "sulphur dioxide": {
+      "name": "sulphur dioxide",
+      "iupac_name": "sulfur dioxide",
+      "formula": "O2S",
+      "structural_formula": "S=OO",
+      "smiles": "O=S=O",
+      "atoms": [
+        {
+          "element": "S",
+          "position": [
+            0.0,
+            -0.5774,
+            0.0
+          ]
+        },
+        {
+          "element": "O",
+          "position": [
+            1.3091,
+            0.2887,
+            0.0
+          ]
+        },
+        {
+          "element": "O",
+          "position": [
+            -1.3091,
+            0.2887,
+            0.0
+          ]
+        }
+      ],
+      "bonds": [
+        {
+          "atom1": 0,
+          "atom2": 1,
+          "atom1_pos": [
+            0.0,
+            -0.5774,
+            0.0
+          ],
+          "atom2_pos": [
+            1.3091,
+            0.2887,
+            0.0
+          ],
+          "type": 2
+        },
+        {
+          "atom1": 0,
+          "atom2": 2,
+          "atom1_pos": [
+            0.0,
+            -0.5774,
+            0.0
+          ],
+          "atom2_pos": [
+            -1.3091,
+            0.2887,
+            0.0
+          ],
+          "type": 2
+        }
+      ]
+    }
+  }
 }

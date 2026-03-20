@@ -52,11 +52,11 @@ class Atom(Actor):
     def _set_element_colour(self):
         colours = {
             'H': (1.0, 1.0, 1.0),    # White
-            'C': (0.5, 0.5, 0.5),    # Gray
+            'C': (0.2, 0.2, 0.2),    # Dark Gray
             'N': (0.0, 0.0, 1.0),    # Blue
             'O': (1.0, 0.0, 0.0),    # Red
             'F': (0.0, 1.0, 0.0),    # Green
-            'Cl': (0.0, 1.0, 0.0),   # Green
+            'Cl': (0.8, 1.0, 0.2),   # Yellow-Green
             'Br': (0.6, 0.2, 0.0),   # Brown
             'I': (0.5, 0.0, 0.5),    # Purple
             'S': (1.0, 1.0, 0.0),    # Yellow
@@ -128,7 +128,7 @@ class Bond(Actor):
         
         # Set up actor
         self.actor.SetMapper(mapper)
-        self.set_color(0.5, 0.5, 0.5)  # Gray bonds by default
+        self.set_color(0.7, 0.7, 0.7)
 
 
 class MoleculeRenderer:
@@ -175,27 +175,12 @@ class MoleculeRenderer:
             self.bonds.append(bond)
             self.renderer.AddActor(bond.get_actor())
         
-        # Add coordinate axes
-        self.add_axes()
-        
         # Add element legend/key
         self.add_legend(molecule_data)
         
         # Reset camera to fit molecule
         self.renderer.ResetCamera()
-        
         return True
-    
-    def add_axes(self):
-        self.axes = vtk.vtkAxesActor()
-        self.axes.SetTotalLength(2, 2, 2)
-        self.axes.SetShaftTypeToCylinder()
-        self.renderer.AddActor(self.axes)
-    
-    def remove_axes(self):
-        if self.axes:
-            self.renderer.RemoveActor(self.axes)
-            self.axes = None
     
     def add_legend(self, molecule_data):
         atoms_data = molecule_data.get('atoms', [])
