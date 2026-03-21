@@ -1,6 +1,5 @@
 import json
 from urllib.parse import quote
-from urllib.request import urlopen
 from urllib.error import URLError, HTTPError
 from collections import Counter, deque
 import requests

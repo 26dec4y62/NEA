@@ -46,7 +46,7 @@ class Window(QtWidgets.QMainWindow):
         self.vtk_widget.GetRenderWindow().AddRenderer(self.renderer)
         self.iren = self.vtk_widget.GetRenderWindow().GetInteractor()
         
-        # Set up interactor style for better control
+        # Set up interactor style
         style = vtk.vtkInteractorStyleTrackballCamera()
         self.iren.SetInteractorStyle(style)
         self.iren.Initialize()

@@ -62,7 +62,7 @@ class Atom(Actor):
             'S': (1.0, 1.0, 0.0),    # Yellow
             'P': (1.0, 0.5, 0.0),    # Orange
         }
-        colour = colours.get(self.element, (1.0, 0.0, 1.0))  # Magenta for unknown
+        colour = colours.get(self.element, (1.0, 0.0, 1.0))  # Magenta for non-common elements
         self.set_color(*colour)
 
 
@@ -76,7 +76,7 @@ class Bond(Actor):
         cylinder.SetHeight(1.0)
         cylinder.SetResolution(20)
         
-        # Calculate bond vector and length using plain Python
+        # Calculate bond vector and length
         v1_x, v1_y, v1_z = atom1_pos
         v2_x, v2_y, v2_z = atom2_pos
         
@@ -137,14 +137,14 @@ class MoleculeRenderer:
         self.atoms = []
         self.bonds = []
         self.axes = None
-        self.legend = None
+        self.key = None
     
     def clear(self):
         self.renderer.RemoveAllViewProps()
         self.atoms = []
         self.bonds = []
         self.axes = None
-        self.legend = None
+        self.key = None
     
     def render_molecule(self, molecule_data):
         self.clear()
@@ -175,14 +175,14 @@ class MoleculeRenderer:
             self.bonds.append(bond)
             self.renderer.AddActor(bond.get_actor())
         
-        # Add element legend/key
-        self.add_legend(molecule_data)
+        # Add element key
+        self.add_key(molecule_data)
         
         # Reset camera to fit molecule
         self.renderer.ResetCamera()
         return True
     
-    def add_legend(self, molecule_data):
+    def add_key(self, molecule_data):
         atoms_data = molecule_data.get('atoms', [])
         
         # Get unique elements in the molecule
@@ -196,9 +196,9 @@ class MoleculeRenderer:
         # Sort elements by count (most common first)
         sorted_elements = sorted(elements_present.items(), key=lambda x: x[1], reverse=True)
         
-        # Create legend actor
-        self.legend = vtk.vtkLegendBoxActor()
-        self.legend.SetNumberOfEntries(len(sorted_elements))
+        # Create key actor
+        self.key = vtk.vtkLegendBoxActor()
+        self.key.SetNumberOfEntries(len(sorted_elements))
         
         # Element colours (same as CPK coloring)
         colours = {
@@ -214,7 +214,7 @@ class MoleculeRenderer:
             'P': (1.0, 0.5, 0.0),    # Orange
         }
         
-        # Add each element to legend
+        # Add each element to key
         for idx, (element, count) in enumerate(sorted_elements):
             # Create a small sphere for the icon
             sphere = vtk.vtkSphereSource()
@@ -225,29 +225,29 @@ class MoleculeRenderer:
             # Get colour for this element
             colour = colours.get(element, (1.0, 0.0, 1.0))  # Magenta for unknown
             
-            # Set legend entry
+            # Set key entry
             label = f"{element} ({count})"
-            self.legend.SetEntry(idx, sphere.GetOutput(), label, colour)
+            self.key.SetEntry(idx, sphere.GetOutput(), label, colour)
         
-        # Position and style the legend
-        self.legend.GetPositionCoordinate().SetCoordinateSystemToNormalizedViewport()
-        self.legend.GetPositionCoordinate().SetValue(0.02, 0.02)  # Bottom-left corner
-        self.legend.SetWidth(0.15)
-        self.legend.SetHeight(0.08 * len(sorted_elements))
+        # Position and style the key
+        self.key.GetPositionCoordinate().SetCoordinateSystemToNormalizedViewport()
+        self.key.GetPositionCoordinate().SetValue(0.02, 0.02)  # Bottom-left corner
+        self.key.SetWidth(0.15)
+        self.key.SetHeight(0.08 * len(sorted_elements))
         
-        # Style the legend box
-        self.legend.UseBackgroundOn()
-        self.legend.SetBackgroundColor(0.2, 0.2, 0.2)
-        self.legend.SetBackgroundOpacity(0.8)
-        self.legend.BorderOff()
+        # Style the key box
+        self.key.UseBackgroundOn()
+        self.key.SetBackgroundColor(0.2, 0.2, 0.2)
+        self.key.SetBackgroundOpacity(0.8)
+        self.key.BorderOff()
         
         # Add to renderer
-        self.renderer.AddActor(self.legend)
+        self.renderer.AddActor(self.key)
     
-    def remove_legend(self):
-        if self.legend:
-            self.renderer.RemoveActor(self.legend)
-            self.legend = None
+    def remove_key(self):
+        if self.key:
+            self.renderer.RemoveActor(self.key)
+            self.key = None
     
     def get_atom_count(self):
         return len(self.atoms)
