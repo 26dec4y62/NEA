@@ -150,7 +150,7 @@ class appdata:
             # Get branches attached to this atom
             branches = []
             for neighbor_idx, bond_type in adjacency[atom_idx]:
-                if neighbor_idx not in visited and neighbor_idx not in main_chain:
+                if neighbor_idx not in visited and neighbor_idx not in main_chain and atoms[neighbor_idx]["element"] != "H":
                     branch_formula = self._build_branch(neighbor_idx, atom_idx, atoms, adjacency, visited)
                     if branch_formula:
                         branches.append(branch_formula)
@@ -180,10 +180,10 @@ class appdata:
                     formula_parts.append("≡")
                 # Single bonds are implied, no symbol needed
         
-        result = "".join(formula_parts)
+            result = "".join(formula_parts)
         
-        # If result is too complex or empty, fall back to molecular formula
-        if not result or len(result) > 50:
+        # If result is too complex, fall back to molecular formula
+        if not result or len(result) > 100:
             return self._generate_molecular_formula(atoms)
         
         return result
