@@ -1,7 +1,7 @@
 import json
 from urllib.parse import quote
 from urllib.error import URLError, HTTPError
-from collections import Counter, deque
+from collections import Counter
 import requests
 
 FILE = "molecules.json"
@@ -158,7 +158,7 @@ class appdata:
             # Add the main atom
             atom_str = element
             
-            # Add hydrogens if it"s a carbon in the main chain
+            # Add hydrogens if it's a carbon in the main chain
             if element == "C":
                 h_count = self._count_hydrogens(atom_idx, atoms, adjacency, visited)
                 if h_count > 0:
@@ -187,7 +187,7 @@ class appdata:
             return self._generate_molecular_formula(atoms)
         
         return result
-
+    
     def _find_main_chain(self, atoms, adjacency):
         # Find the longest carbon chain in the molecule
         carbon_indices = [i for i, atom in enumerate(atoms) if atom["element"] == "C"]
@@ -205,22 +205,24 @@ class appdata:
                 longest_chain = chain
         
         return longest_chain if longest_chain else carbon_indices[:1]
-
+    
     def _bfs_longest_path(self, start, atoms, adjacency):
-        queue = deque([(start, [start])])
+        queue = [(start, [start])]
         longest = [start]
         
         while queue:
-            current, path = queue.popleft()
+            current, path = queue.pop(0)
             
             if len(path) > len(longest):
                 longest = path
             
             for neighbor, _ in adjacency[current]:
                 if neighbor not in path and atoms[neighbor]["element"] == "C":
+                    # Add to back of queue
                     queue.append((neighbor, path + [neighbor]))
+        
         return longest
-
+    
     def _build_branch(self, atom_idx, parent_idx, atoms, adjacency, visited):
         # Recursive branch building
         if atom_idx in visited:
@@ -240,11 +242,11 @@ class appdata:
         for neighbor_idx, bond_type in adjacency[atom_idx]:
             if neighbor_idx != parent_idx and neighbor_idx not in visited:
                 sub_branch = self._build_branch(neighbor_idx, atom_idx, atoms, adjacency, visited)
-                if sub_branch:
+                if sub_branch and sub_branch != "H":
                     branch += f"({sub_branch})"
         
         return branch
-
+    
     def _count_hydrogens(self, atom_idx, atoms, adjacency, visited):
         h_count = 0
         for neighbor_idx, _ in adjacency[atom_idx]:
@@ -256,12 +258,15 @@ class appdata:
         for neighbor, bond_type in adjacency[atom1_idx]:
             if neighbor == atom2_idx:
                 return bond_type
-        return 1  # Default to single bond
+        return 1
 
     def _generate_molecular_formula(self, atoms):
-        element_counts = Counter(atom["element"] for atom in atoms)
-        formula_parts = []
+        element_counts = {}
+        for atom in atoms:
+            element = atom["element"]
+            element_counts[element] = element_counts.get(element, 0) + 1
         
+        formula_parts = []
         # Carbon first
         if "C" in element_counts:
             count = element_counts["C"]
