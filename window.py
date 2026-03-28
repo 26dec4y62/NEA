@@ -21,7 +21,7 @@ class Window(QtWidgets.QMainWindow):
         self.entry = QtWidgets.QLineEdit()
         self.entry.setPlaceholderText("Enter molecule name e.g., methanol")
         self.entry.returnPressed.connect(self.search)
-        btn = QtWidgets.QPushButton("Search & Render")
+        btn = QtWidgets.QPushButton("Search Molecule")
         btn.clicked.connect(self.search)
         input_layout.addWidget(self.entry)
         input_layout.addWidget(btn)
