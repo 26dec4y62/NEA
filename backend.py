@@ -1,7 +1,6 @@
 import json
 from urllib.parse import quote
 from urllib.error import URLError, HTTPError
-from collections import Counter
 import requests
 
 FILE = "molecules.json"
